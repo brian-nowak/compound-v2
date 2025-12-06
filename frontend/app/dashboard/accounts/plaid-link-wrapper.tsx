@@ -1,20 +1,41 @@
+'use client';
+
 import { getLinkToken } from '@/app/lib/plaid-api';
 import { PlaidLinkClient } from './plaid-link-client';
+import { useEffect, useState } from 'react';
 
 interface PlaidLinkWrapperProps {
   userId: number;
   itemId?: number;
 }
 
-export async function PlaidLinkWrapper({ userId, itemId }: PlaidLinkWrapperProps) {
-  let linkToken: string | null = null;
-  let error: string | null = null;
+export function PlaidLinkWrapper({ userId, itemId }: PlaidLinkWrapperProps) {
+  const [linkToken, setLinkToken] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  try {
-    linkToken = await getLinkToken(userId, itemId);
-  } catch (e) {
-    error = e instanceof Error ? e.message : 'Failed to get link token';
-    console.error('Failed to get Plaid link token:', error);
+  useEffect(() => {
+    setIsLoading(true);
+    setError(null);
+    getLinkToken(userId, itemId)
+      .then((token) => {
+        setLinkToken(token);
+        setError(null);
+      })
+      .catch((e) => {
+        const errorMessage = e instanceof Error ? e.message : 'Failed to get link token';
+        setError(errorMessage);
+        console.error('Failed to get Plaid link token:', errorMessage);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [userId, itemId]);
+
+  if (isLoading) {
+    return (
+      <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-200" />
+    );
   }
 
   if (!linkToken) {

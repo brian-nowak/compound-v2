@@ -7,6 +7,9 @@ import type {
   SyncTransactionsResponse,
 } from './plaid-definitions';
 
+// Use Next.js API routes which proxy to the Go backend
+// This avoids CORS issues when calling from the browser
+const API_BASE_URL = '/api/plaid';
 const GO_BACKEND_URL = process.env.GO_BACKEND_URL || 'http://localhost:8000';
 
 // Helper for handling API responses
@@ -46,7 +49,16 @@ export async function createUser(username: string): Promise<User> {
 // =============================================================================
 
 export async function getLinkToken(userId: number, itemId?: number): Promise<string> {
-  const response = await fetch(`${GO_BACKEND_URL}/api/link-token`, {
+  // Check if we're on the server (Node.js) or client (browser)
+  const isServer = typeof window === 'undefined';
+
+  // Server-side: call Go backend directly to avoid URL parsing issues
+  // Client-side: use Next.js API route
+  const url = isServer
+    ? `${GO_BACKEND_URL}/api/link-token`
+    : `${API_BASE_URL}/link-token`;
+
+  const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userId, itemId: itemId ?? null }),

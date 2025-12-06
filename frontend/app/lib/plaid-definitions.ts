@@ -24,6 +24,7 @@ export interface Account {
   id: number;
   item_id: number;
   plaid_account_id: string;
+  institution_name: string | null;
   name: string;
   mask: string;
   official_name: string | null;

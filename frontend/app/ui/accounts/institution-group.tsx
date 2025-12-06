@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ChevronUpIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { BuildingLibraryIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 import type { Account } from '@/app/lib/plaid-definitions';
 import { AccountCard, AccountCardSkeleton } from './account-card';
 import { formatCurrency } from '@/app/lib/utils';
+import { syncTransactions } from '@/app/lib/plaid-api';
 
 interface InstitutionGroupProps {
   institutionId: string;
@@ -22,6 +23,30 @@ export function InstitutionGroup({
   defaultExpanded = true,
 }: InstitutionGroupProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<{ added: number; modified: number; removed: number } | null>(null);
+
+  const handleSyncTransactions = async () => {
+    if (accounts.length === 0) return;
+
+    setIsSyncing(true);
+    setSyncStatus(null);
+
+    try {
+      // Get item_id from first account (all accounts in a group share the same item_id)
+      const itemId = accounts[0].item_id;
+      const result = await syncTransactions(itemId);
+      setSyncStatus(result);
+
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => setSyncStatus(null), 5000);
+    } catch (error) {
+      console.error('Error syncing transactions:', error);
+      alert('Failed to sync transactions. Please try again.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Calculate total balance across all accounts in this institution
   const totalBalance = accounts.reduce((sum, account) => {
@@ -53,6 +78,22 @@ export function InstitutionGroup({
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSyncTransactions();
+            }}
+            disabled={isSyncing}
+            className={clsx(
+              'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+              'hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50',
+              isSyncing ? 'text-blue-400' : 'text-blue-600'
+            )}
+            title="Sync transactions from Plaid"
+          >
+            <ArrowPathIcon className={clsx('h-4 w-4', isSyncing && 'animate-spin')} />
+            {isSyncing ? 'Syncing...' : 'Sync'}
+          </button>
           <div className="text-right">
             <p className="text-sm text-gray-500">Net Balance</p>
             <p
@@ -61,7 +102,7 @@ export function InstitutionGroup({
                 totalBalance < 0 ? 'text-red-600' : 'text-gray-900'
               )}
             >
-              {formatCurrency(totalBalance * 100)}
+              {formatCurrency(totalBalance)}
             </p>
           </div>
           {expanded ? (
@@ -71,6 +112,15 @@ export function InstitutionGroup({
           )}
         </div>
       </button>
+
+      {syncStatus && (
+        <div className="mx-4 mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-800">
+          <p className="font-medium">Sync completed!</p>
+          <p className="text-xs text-green-700">
+            Added: {syncStatus.added} | Modified: {syncStatus.modified} | Removed: {syncStatus.removed}
+          </p>
+        </div>
+      )}
 
       {expanded && (
         <div className="grid gap-4 p-4 pt-0 sm:grid-cols-2 lg:grid-cols-3">

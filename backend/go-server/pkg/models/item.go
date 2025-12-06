@@ -8,6 +8,7 @@ type Item struct {
 	PlaidAccessToken   string    `db:"plaid_access_token" json:"plaid_access_token"`
 	PlaidItemID        string    `db:"plaid_item_id" json:"plaid_item_id"`
 	PlaidInstitutionID string    `db:"plaid_institution_id" json:"plaid_institution_id"`
+	InstitutionName    *string   `db:"institution_name" json:"institution_name"`
 	Status             string    `db:"status" json:"status"`
 	CreatedAt          time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt          time.Time `db:"updated_at" json:"updated_at"`

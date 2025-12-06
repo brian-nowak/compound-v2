@@ -1,19 +1,42 @@
+'use client';
+
 import { getUserAccounts } from '@/app/lib/plaid-api';
 import { InstitutionGroup } from '@/app/ui/accounts/institution-group';
 import type { Account } from '@/app/lib/plaid-definitions';
+import { useEffect, useState } from 'react';
 
 interface AccountsListProps {
   userId: number;
 }
 
-export async function AccountsList({ userId }: AccountsListProps) {
-  let accounts: Account[] = [];
-  let error: string | null = null;
+export function AccountsList({ userId }: AccountsListProps) {
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  try {
-    accounts = await getUserAccounts(userId);
-  } catch (e) {
-    error = e instanceof Error ? e.message : 'Failed to fetch accounts';
+  useEffect(() => {
+    setIsLoading(true);
+    setError(null);
+    getUserAccounts(userId)
+      .then((data) => {
+        setAccounts(data || []);
+        setError(null);
+      })
+      .catch((e) => {
+        setError(e instanceof Error ? e.message : 'Failed to fetch accounts');
+        setAccounts([]);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [userId]);
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-gray-50 p-12 text-center">
+        <p className="text-gray-600">Loading accounts...</p>
+      </div>
+    );
   }
 
   if (error) {
@@ -58,6 +81,7 @@ export async function AccountsList({ userId }: AccountsListProps) {
         <InstitutionGroup
           key={itemId}
           institutionId={itemId}
+          institutionName={itemAccounts[0]?.institution_name || undefined}
           accounts={itemAccounts}
         />
       ))}

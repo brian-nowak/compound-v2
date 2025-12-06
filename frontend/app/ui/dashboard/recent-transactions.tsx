@@ -13,11 +13,11 @@ export default async function RecentTransactions({
 
   return (
     <div className="flex w-full flex-col md:col-span-4">
-      <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
+      <h2 className={`${lusitana.className} mb-4 text-xl text-gray-900 dark:text-gray-100 md:text-2xl`}>
         Recent Transactions
       </h2>
-      <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4">
-        <div className="bg-white px-6">
+      <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4 dark:bg-gray-800">
+        <div className="bg-white px-6 dark:bg-gray-700">
           {recentTransactions.map((transaction, i) => {
             const isIncome = transaction.amount < 0;
             const displayAmount = Math.abs(transaction.amount);
@@ -28,23 +28,23 @@ export default async function RecentTransactions({
                 className={clsx(
                   'flex flex-row items-center justify-between py-4',
                   {
-                    'border-t': i !== 0,
+                    'border-t border-gray-200 dark:border-gray-600': i !== 0,
                   }
                 )}
               >
                 <div className="flex items-center">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold md:text-base">
+                    <p className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100 md:text-base">
                       {transaction.name}
                     </p>
-                    <p className="hidden text-sm text-gray-500 sm:block">
+                    <p className="hidden text-sm text-gray-500 dark:text-gray-400 sm:block">
                       {formatDateToLocal(transaction.date)}
                     </p>
                   </div>
                 </div>
                 <p
                   className={`${lusitana.className} truncate text-sm font-medium md:text-base ${
-                    isIncome ? 'text-green-600' : 'text-gray-900'
+                    isIncome ? 'text-green-600 dark:text-green-400' : 'text-gray-900 dark:text-gray-100'
                   }`}
                 >
                   {isIncome ? '+' : '-'}
@@ -55,8 +55,8 @@ export default async function RecentTransactions({
           })}
         </div>
         <div className="flex items-center pb-2 pt-6">
-          <ArrowPathIcon className="h-5 w-5 text-gray-500" />
-          <h3 className="ml-2 text-sm text-gray-500">Updated just now</h3>
+          <ArrowPathIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+          <h3 className="ml-2 text-sm text-gray-500 dark:text-gray-400">Updated just now</h3>
         </div>
       </div>
     </div>

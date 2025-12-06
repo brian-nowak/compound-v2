@@ -90,8 +90,12 @@ func ExchangeToken(c *gin.Context) {
 		}
 	}
 
-	// Store item in database
-	dbItem, err := db.CreateItem(context.Background(), req.UserID, accessToken, itemID, institutionID, "linked")
+	// Store item in database with institution name
+	var institutionNamePtr *string
+	if institutionName != "" {
+		institutionNamePtr = &institutionName
+	}
+	dbItem, err := db.CreateItemWithInstitution(context.Background(), req.UserID, accessToken, itemID, institutionID, institutionNamePtr, "linked")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "failed to store item: " + err.Error(),

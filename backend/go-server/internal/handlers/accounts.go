@@ -30,21 +30,6 @@ func GetUserAccounts(c *gin.Context) {
 		return
 	}
 
-	// Convert to response format
-	var responseAccounts []gin.H
-	for _, account := range accounts {
-		responseAccounts = append(responseAccounts, gin.H{
-			"id":                account.ID,
-			"item_id":           account.ItemID,
-			"plaid_account_id":  account.PlaidAccountID,
-			"name":              account.Name,
-			"mask":              account.Mask,
-			"type":              account.Type,
-			"subtype":           account.Subtype,
-			"current_balance":   nil, // TODO: fetch from Plaid or cache in DB
-			"available_balance": nil, // TODO: fetch from Plaid or cache in DB
-		})
-	}
-
-	c.JSON(http.StatusOK, responseAccounts)
+	// Return accounts array directly to match frontend expectation
+	c.JSON(http.StatusOK, accounts)
 }

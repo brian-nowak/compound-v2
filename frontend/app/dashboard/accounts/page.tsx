@@ -1,12 +1,14 @@
+'use client';
+
 import { Suspense } from 'react';
 import { lusitana } from '@/app/ui/fonts';
 import { InstitutionGroupSkeleton } from '@/app/ui/accounts/institution-group';
 import { AccountsList } from './accounts-list';
 import { PlaidLinkWrapper } from './plaid-link-wrapper';
+import { useUser } from '@/app/lib/user-context';
 
-export default async function AccountsPage() {
-  // TODO: Get userId from user context/session - using default for now
-  const userId = 1;
+export default function AccountsPage() {
+  const { userId } = useUser();
 
   return (
     <main>

@@ -39,12 +39,6 @@ export function PlaidLinkButton({
           throw new Error(error.error || 'Failed to link account');
         }
 
-        // Sync transactions for the newly linked item
-        const data = await response.json();
-        await fetch(`/api/plaid/items/${data.item_id}/sync-transactions`, {
-          method: 'POST',
-        });
-
         onSuccess?.();
       } catch (error) {
         console.error('Error exchanging token:', error);

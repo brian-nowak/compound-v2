@@ -144,7 +144,7 @@ func GetAccountByPlaidAccountID(ctx context.Context, plaidAccountID string) (*mo
 
 // GetAccountsByUserID retrieves all accounts for a specific user across all their items
 func GetAccountsByUserID(ctx context.Context, userID int) ([]*models.Account, error) {
-	query := `SELECT a.id, a.item_id, a.plaid_account_id, a.name, a.mask, a.type, a.subtype, a.created_at, a.updated_at
+	query := `SELECT a.id, a.item_id, a.plaid_account_id, i.institution_name, a.name, a.mask, a.type, a.subtype, a.created_at, a.updated_at
 	          FROM accounts_table a
 	          JOIN items_table i ON a.item_id = i.id
 	          WHERE i.user_id = $1
@@ -163,6 +163,7 @@ func GetAccountsByUserID(ctx context.Context, userID int) ([]*models.Account, er
 			&account.ID,
 			&account.ItemID,
 			&account.PlaidAccountID,
+			&account.InstitutionName,
 			&account.Name,
 			&account.Mask,
 			&account.Type,

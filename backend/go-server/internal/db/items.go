@@ -9,7 +9,7 @@ import (
 // GetItemByID retrieves an item from the database by ID
 func GetItemByID(ctx context.Context, id int) (*models.Item, error) {
 	query := `SELECT id, user_id, plaid_access_token, plaid_item_id, plaid_institution_id,
-	                 status, created_at, updated_at, transactions_cursor
+	                 institution_name, status, created_at, updated_at, transactions_cursor
 	          FROM items WHERE id=$1`
 
 	item := &models.Item{}
@@ -19,6 +19,7 @@ func GetItemByID(ctx context.Context, id int) (*models.Item, error) {
 		&item.PlaidAccessToken,
 		&item.PlaidItemID,
 		&item.PlaidInstitutionID,
+		&item.InstitutionName,
 		&item.Status,
 		&item.CreatedAt,
 		&item.UpdatedAt,
@@ -34,7 +35,7 @@ func GetItemByID(ctx context.Context, id int) (*models.Item, error) {
 // GetItemsByUserID retrieves all items for a user
 func GetItemsByUserID(ctx context.Context, userID int) ([]*models.Item, error) {
 	query := `SELECT id, user_id, plaid_access_token, plaid_item_id, plaid_institution_id,
-	                 status, created_at, updated_at, transactions_cursor
+	                 institution_name, status, created_at, updated_at, transactions_cursor
 	          FROM items WHERE user_id=$1`
 
 	rows, err := conn.Query(ctx, query, userID)
@@ -52,6 +53,7 @@ func GetItemsByUserID(ctx context.Context, userID int) ([]*models.Item, error) {
 			&item.PlaidAccessToken,
 			&item.PlaidItemID,
 			&item.PlaidInstitutionID,
+			&item.InstitutionName,
 			&item.Status,
 			&item.CreatedAt,
 			&item.UpdatedAt,
@@ -72,17 +74,23 @@ func GetItemsByUserID(ctx context.Context, userID int) ([]*models.Item, error) {
 
 // CreateItem creates a new item in the database
 func CreateItem(ctx context.Context, userID int, plaidAccessToken, plaidItemID, plaidInstitutionID, status string) (*models.Item, error) {
-	query := `INSERT INTO items (user_id, plaid_access_token, plaid_item_id, plaid_institution_id, status, created_at, updated_at)
-	          VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-	          RETURNING id, user_id, plaid_access_token, plaid_item_id, plaid_institution_id, status, created_at, updated_at, transactions_cursor`
+	return CreateItemWithInstitution(ctx, userID, plaidAccessToken, plaidItemID, plaidInstitutionID, nil, status)
+}
+
+// CreateItemWithInstitution creates a new item in the database with institution name
+func CreateItemWithInstitution(ctx context.Context, userID int, plaidAccessToken, plaidItemID, plaidInstitutionID string, institutionName *string, status string) (*models.Item, error) {
+	query := `INSERT INTO items (user_id, plaid_access_token, plaid_item_id, plaid_institution_id, institution_name, status, created_at, updated_at)
+	          VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+	          RETURNING id, user_id, plaid_access_token, plaid_item_id, plaid_institution_id, institution_name, status, created_at, updated_at, transactions_cursor`
 
 	item := &models.Item{}
-	err := conn.QueryRow(ctx, query, userID, plaidAccessToken, plaidItemID, plaidInstitutionID, status).Scan(
+	err := conn.QueryRow(ctx, query, userID, plaidAccessToken, plaidItemID, plaidInstitutionID, institutionName, status).Scan(
 		&item.ID,
 		&item.UserID,
 		&item.PlaidAccessToken,
 		&item.PlaidItemID,
 		&item.PlaidInstitutionID,
+		&item.InstitutionName,
 		&item.Status,
 		&item.CreatedAt,
 		&item.UpdatedAt,

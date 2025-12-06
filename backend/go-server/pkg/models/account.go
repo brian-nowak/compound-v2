@@ -6,6 +6,7 @@ type Account struct {
 	ID                      int       `db:"id" json:"id"`
 	ItemID                  int       `db:"item_id" json:"item_id"`
 	PlaidAccountID          string    `db:"plaid_account_id" json:"plaid_account_id"`
+	InstitutionName         *string   `db:"institution_name" json:"institution_name"`
 	Name                    string    `db:"name" json:"name"`
 	Mask                    string    `db:"mask" json:"mask"`
 	OfficialName            *string   `db:"official_name" json:"official_name"`
