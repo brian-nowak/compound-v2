@@ -107,8 +107,13 @@ export async function getItemAccounts(itemId: number): Promise<Account[]> {
 export async function getUserAccounts(userId: number): Promise<Account[]> {
   // TODO: Implement when /api/users/:id/accounts endpoint is added to Go backend
   // For now, this would need to fetch items first, then accounts per item
-  const response = await fetch(`${GO_BACKEND_URL}/api/users/${userId}/accounts`);
-  return handleResponse<Account[]>(response);
+  try {
+    const response = await fetch(`${GO_BACKEND_URL}/api/users/${userId}/accounts`);
+    return handleResponse<Account[]>(response);
+  } catch (error) {
+    console.error('Failed to fetch user accounts:', error);
+    return [];
+  }
 }
 
 // =============================================================================
@@ -120,9 +125,14 @@ interface TransactionsResponse {
 }
 
 export async function getUserTransactions(userId: number): Promise<Transaction[]> {
-  const response = await fetch(`${GO_BACKEND_URL}/api/transactions/${userId}`);
-  const data = await handleResponse<TransactionsResponse>(response);
-  return data.transactions;
+  try {
+    const response = await fetch(`${GO_BACKEND_URL}/api/transactions/${userId}`);
+    const data = await handleResponse<TransactionsResponse>(response);
+    return data.transactions;
+  } catch (error) {
+    console.error('Failed to fetch user transactions:', error);
+    return [];
+  }
 }
 
 export async function syncTransactions(itemId: number): Promise<SyncTransactionsResponse> {

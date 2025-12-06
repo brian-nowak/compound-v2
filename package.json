@@ -1,0 +1,11 @@
+{
+  "name": "finance-app",
+  "private": true,
+  "scripts": {
+    "dev": "./start-dev.sh",
+    "stop": "cd backend && docker compose down"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

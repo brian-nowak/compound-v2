@@ -16,8 +16,11 @@ export default function TransactionsPage() {
   useEffect(() => {
     setIsLoading(true);
     getUserTransactions(userId)
-      .then((data) => setTransactions(data))
-      .catch((err) => console.error('Failed to fetch transactions:', err))
+      .then((data) => setTransactions(data || []))
+      .catch((err) => {
+        console.error('Failed to fetch transactions:', err);
+        setTransactions([]);
+      })
       .finally(() => setIsLoading(false));
   }, [userId]);
 
@@ -28,7 +31,7 @@ export default function TransactionsPage() {
       </h1>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
         <p className="text-sm text-gray-600">
-          {isLoading ? 'Loading...' : `Showing ${transactions.length} transactions`}
+          {isLoading ? 'Loading...' : `Showing ${transactions?.length || 0} transactions`}
         </p>
       </div>
       <Suspense fallback={<TransactionsTableSkeleton />}>

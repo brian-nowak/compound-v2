@@ -13,6 +13,16 @@ export async function fetchFinancialSummary(
 ): Promise<FinancialSummary> {
   const accounts = await getUserAccounts(userId);
 
+  // Handle null or undefined accounts
+  if (!accounts) {
+    return {
+      totalBalance: 0,
+      cashBalance: 0,
+      creditBalance: 0,
+      netWorth: 0,
+    };
+  }
+
   let totalAssets = 0;
   let cashBalance = 0;
   let creditBalance = 0;
@@ -50,6 +60,11 @@ export async function fetchFinancialSummary(
 export async function fetchRecentTransactions(userId: number, limit: number) {
   const allTransactions = await getUserTransactions(userId);
 
+  // Handle null or undefined transactions
+  if (!allTransactions) {
+    return [];
+  }
+
   // Sort by date descending and take the first 'limit' items
   return allTransactions
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -65,6 +80,11 @@ export async function fetchSpendingByCategory(
   userId: number
 ): Promise<SpendingByCategory[]> {
   const transactions = await getUserTransactions(userId);
+
+  // Handle null or undefined transactions
+  if (!transactions) {
+    return [];
+  }
 
   // Group transactions by category and sum amounts
   const categoryMap = new Map<string, number>();
