@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import path from 'path';
 
 const nextConfig: NextConfig = {
   async rewrites() {
@@ -8,6 +9,12 @@ const nextConfig: NextConfig = {
         destination: 'http://localhost:8000/api/:path*',
       },
     ];
+  },
+  experimental: {
+    // @ts-expect-error - Turbopack type missing in NextConfig
+    turbopack: {
+      root: path.resolve(__dirname, '..'),
+    },
   },
 };
 

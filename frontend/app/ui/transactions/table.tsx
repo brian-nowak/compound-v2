@@ -2,7 +2,7 @@ import { formatCurrency, formatDateToLocal } from '@/app/lib/utils';
 import { Transaction } from '@/app/lib/plaid-definitions';
 import TransactionRow from './transaction-row';
 
-export default async function TransactionsTable({
+export default function TransactionsTable({
   transactions,
 }: {
   transactions: Transaction[];
@@ -78,9 +78,8 @@ export default async function TransactionsTable({
                   </td>
                   <td className="px-3 py-3 text-right">
                     <span
-                      className={`font-semibold ${
-                        isIncome ? 'text-green-600' : 'text-gray-900'
-                      }`}
+                      className={`font-semibold ${isIncome ? 'text-green-600' : 'text-gray-900'
+                        }`}
                     >
                       {isIncome ? '+' : '-'}
                       {formatCurrency(displayAmount)}

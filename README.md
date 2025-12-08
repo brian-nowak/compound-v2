@@ -39,6 +39,9 @@ pnpm dev
 - Frontend: http://localhost:3000
 - Go API: http://localhost:8000
 - PostgreSQL: localhost:5432
+  - Username: postgres
+  - Password: password
+  - Database: postgres
 
 ## Environment
 

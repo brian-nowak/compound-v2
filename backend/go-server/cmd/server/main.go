@@ -115,6 +115,7 @@ func main() {
 	router.GET("/api/users/:id", handlers.GetUser)
 	router.GET("/api/users/username/:username", handlers.GetUserByUsername)
 	router.GET("/api/users/:id/accounts", handlers.GetUserAccounts)
+	router.POST("/api/users/:id/refresh-balances", handlers.RefreshUserAccountBalances)
 
 	// Link Token endpoint
 	router.POST("/api/link-token", handlers.MakeLinkTokenHandler(PLAID_PRODUCTS, PLAID_COUNTRY_CODES, PLAID_REDIRECT_URI))
@@ -126,6 +127,7 @@ func main() {
 	// Transaction endpoints
 	router.POST("/api/items/:itemID/sync-transactions", handlers.SyncTransactionsForItem)
 	router.GET("/api/transactions/:userID", handlers.GetUserTransactions)
+	router.GET("/api/transactions/income/:userID")
 
 	// -------------------------------------------------
 	// end API endpoints

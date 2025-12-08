@@ -62,9 +62,17 @@ export function InstitutionGroup({
 
   return (
     <div className="rounded-xl border border-gray-200 bg-gray-50">
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between p-4 text-left hover:bg-gray-100"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setExpanded(!expanded);
+          }
+        }}
+        className="flex w-full cursor-pointer items-center justify-between p-4 text-left hover:bg-gray-100"
       >
         <div className="flex items-center gap-3">
           <div className="rounded-lg bg-blue-100 p-2">
@@ -83,6 +91,7 @@ export function InstitutionGroup({
               e.stopPropagation();
               handleSyncTransactions();
             }}
+            onKeyDown={(e) => e.stopPropagation()}
             disabled={isSyncing}
             className={clsx(
               'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
@@ -111,7 +120,7 @@ export function InstitutionGroup({
             <ChevronDownIcon className="h-5 w-5 text-gray-500" />
           )}
         </div>
-      </button>
+      </div>
 
       {syncStatus && (
         <div className="mx-4 mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-800">

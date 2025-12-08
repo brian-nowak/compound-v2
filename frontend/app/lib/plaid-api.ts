@@ -153,6 +153,32 @@ export async function syncTransactions(itemId: number): Promise<SyncTransactions
   };
 }
 
+export async function getUserIncome(
+  userId: number,
+  startDate?: string,
+  endDate?: string
+): Promise<number> {
+  try {
+    let url = `${GO_BACKEND_URL}/api/users/${userId}/income`;
+
+    // add query params if date range
+    const params = new URLSearchParams();
+    if (startDate) params.append('start_date', startDate);
+    if (endDate) params.append('end_date', endDate);
+
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+
+    const response =  await fetch(url);
+    const data = await handleResponse<{ total_income: number }>(response);
+    return data.total_income;
+  } catch (error) {
+    console.error('Failed to fetch user income:', error);
+    return 0;
+  }
+}
+
 // =============================================================================
 // Health Check
 // =============================================================================

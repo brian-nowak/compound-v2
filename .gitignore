@@ -43,6 +43,9 @@ yarn-error.log*
 *.db
 *.db-journal
 
+# Claude Code
+.claude/.state/
+
 # Misc
 *.pem
 .vercel

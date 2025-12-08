@@ -106,6 +106,32 @@ func ExchangeToken(c *gin.Context) {
 	// Store accounts in database and prepare response
 	var responseAccounts []gin.H
 	for _, account := range accounts {
+		// Extract balance information
+		var officialName *string
+		if account.OfficialName.IsSet() {
+			officialName = account.OfficialName.Get()
+		}
+
+		var currentBalance *float64
+		if account.Balances.Current.IsSet() {
+			currentBalance = account.Balances.Current.Get()
+		}
+
+		var availableBalance *float64
+		if account.Balances.Available.IsSet() {
+			availableBalance = account.Balances.Available.Get()
+		}
+
+		var isoCurrencyCode *string
+		if account.Balances.IsoCurrencyCode.IsSet() {
+			isoCurrencyCode = account.Balances.IsoCurrencyCode.Get()
+		}
+
+		var unofficialCurrencyCode *string
+		if account.Balances.UnofficialCurrencyCode.IsSet() {
+			unofficialCurrencyCode = account.Balances.UnofficialCurrencyCode.Get()
+		}
+
 		_, err := db.CreateOrUpdateAccount(
 			context.Background(),
 			dbItem.ID,
@@ -114,6 +140,11 @@ func ExchangeToken(c *gin.Context) {
 			account.GetMask(),
 			string(account.GetType()),
 			string(account.GetSubtype()),
+			officialName,
+			currentBalance,
+			availableBalance,
+			isoCurrencyCode,
+			unofficialCurrencyCode,
 		)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{

@@ -7,24 +7,34 @@ import (
 )
 
 // CreateOrUpdateAccount creates or updates an account in the database
-func CreateOrUpdateAccount(ctx context.Context, itemID int, plaidAccountID, name, mask, accountType, subtype string) (*models.Account, error) {
-	query := `INSERT INTO accounts_table (item_id, plaid_account_id, name, mask, type, subtype, created_at, updated_at)
-	          VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+func CreateOrUpdateAccount(ctx context.Context, itemID int, plaidAccountID, name, mask, accountType, subtype string, officialName *string, currentBalance, availableBalance *float64, isoCurrencyCode, unofficialCurrencyCode *string) (*models.Account, error) {
+	query := `INSERT INTO accounts_table (item_id, plaid_account_id, name, mask, official_name, current_balance, available_balance, iso_currency_code, unofficial_currency_code, type, subtype, created_at, updated_at)
+	          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
 	          ON CONFLICT (plaid_account_id) DO UPDATE SET
 	            name = EXCLUDED.name,
 	            mask = EXCLUDED.mask,
+	            official_name = EXCLUDED.official_name,
+	            current_balance = EXCLUDED.current_balance,
+	            available_balance = EXCLUDED.available_balance,
+	            iso_currency_code = EXCLUDED.iso_currency_code,
+	            unofficial_currency_code = EXCLUDED.unofficial_currency_code,
 	            type = EXCLUDED.type,
 	            subtype = EXCLUDED.subtype,
 	            updated_at = NOW()
-	          RETURNING id, item_id, plaid_account_id, name, mask, type, subtype, created_at, updated_at`
+	          RETURNING id, item_id, plaid_account_id, name, mask, official_name, current_balance, available_balance, iso_currency_code, unofficial_currency_code, type, subtype, created_at, updated_at`
 
 	account := &models.Account{}
-	err := conn.QueryRow(ctx, query, itemID, plaidAccountID, name, mask, accountType, subtype).Scan(
+	err := conn.QueryRow(ctx, query, itemID, plaidAccountID, name, mask, officialName, currentBalance, availableBalance, isoCurrencyCode, unofficialCurrencyCode, accountType, subtype).Scan(
 		&account.ID,
 		&account.ItemID,
 		&account.PlaidAccountID,
 		&account.Name,
 		&account.Mask,
+		&account.OfficialName,
+		&account.CurrentBalance,
+		&account.AvailableBalance,
+		&account.IsoCurrencyCode,
+		&account.UnofficialCurrencyCode,
 		&account.Type,
 		&account.Subtype,
 		&account.CreatedAt,
@@ -144,7 +154,10 @@ func GetAccountByPlaidAccountID(ctx context.Context, plaidAccountID string) (*mo
 
 // GetAccountsByUserID retrieves all accounts for a specific user across all their items
 func GetAccountsByUserID(ctx context.Context, userID int) ([]*models.Account, error) {
-	query := `SELECT a.id, a.item_id, a.plaid_account_id, i.institution_name, a.name, a.mask, a.type, a.subtype, a.created_at, a.updated_at
+	query := `SELECT a.id, a.item_id, a.plaid_account_id, i.institution_name, a.name, a.mask,
+	          a.official_name, a.current_balance, a.available_balance,
+	          a.iso_currency_code, a.unofficial_currency_code,
+	          a.type, a.subtype, a.created_at, a.updated_at
 	          FROM accounts_table a
 	          JOIN items_table i ON a.item_id = i.id
 	          WHERE i.user_id = $1
@@ -166,6 +179,11 @@ func GetAccountsByUserID(ctx context.Context, userID int) ([]*models.Account, er
 			&account.InstitutionName,
 			&account.Name,
 			&account.Mask,
+			&account.OfficialName,
+			&account.CurrentBalance,
+			&account.AvailableBalance,
+			&account.IsoCurrencyCode,
+			&account.UnofficialCurrencyCode,
 			&account.Type,
 			&account.Subtype,
 			&account.CreatedAt,

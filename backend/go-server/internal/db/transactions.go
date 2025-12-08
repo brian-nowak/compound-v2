@@ -4,6 +4,7 @@ import (
 	"compound/go-server/pkg/models"
 	"context"
 	"fmt"
+	"strings"
 )
 
 // CreateOrUpdateTransaction creates or updates a transaction in the database
@@ -199,4 +200,128 @@ func DeleteTransactionByPlaidID(ctx context.Context, plaidTransactionID string) 
 	}
 
 	return nil
+}
+
+// TransactionFilter for dynamic queries
+type TransactionFilter struct {
+	Field    string
+	Operator string
+	Value    interface{}
+}
+
+type TransactionAggregation struct {
+	Function string
+	Field    string
+	Alias    string
+}
+
+// QueryTransactions
+func QueryTransactionsDynamic(
+	ctx context.Context,
+	userID int,
+	aggregation TransactionAggregation,
+	filters []TransactionFilter,
+) (float64, error) {
+	// build base query
+	baseQuery := `SELECT %s(%s) as %s
+				  FROM transactions_table t
+				  LEFT JOIN accounts_table a ON t.account_id = a.id
+	              LEFT JOIN items_table i ON a.item_id = i.id
+	              WHERE i.user_id = $1`
+
+	args := []interface{}{userID}
+	argCounter := 2
+
+	// build where clause from filters
+	whereClauses := []string{}
+	for _, filter := range filters {
+		clause, arg := buildFilterClause(filter, argCounter)
+		whereClauses = append(whereClauses, clause)
+		args = append(args, arg)
+		argCounter++
+	}
+
+	// construct final query
+	query := fmt.Sprintf(
+		baseQuery,
+		aggregation.Function,
+		aggregation.Field,
+		aggregation.Alias,
+	)
+
+	// add filter clauses
+	if len(whereClauses) > 0 {
+		query += " AND " + strings.Join(whereClauses, " AND ")
+	}
+
+	// execute built query
+	var result float64
+	err := conn.QueryRow(ctx, query, args...).Scan(&result)
+	if err != nil {
+		return 0, fmt.Errorf("aggregation query failed: %w", err)
+	}
+
+	return result, nil
+}
+
+// buildFilterClause converts a TransactionFilter into a SQL WHERE clause fragment
+func buildFilterClause(filter TransactionFilter, argNum int) (string, interface{}) {
+	placeholder := fmt.Sprintf("$%d", argNum)
+
+	switch filter.Operator {
+	case "<", ">", "<=", "=>", "=", "!=":
+		return fmt.Sprintf("t.%s %s %s", filter.Field, filter.Operator, placeholder), filter.Value
+
+	case "BETWEEN":
+		// Expects Value to be a slice/array with 2 elements [start, end]
+		// Note: For BETWEEN, you'll need to handle 2 parameters - see enhanced version below
+		return fmt.Sprintf("t.%s BETWEEN %s AND %s", filter.Field, placeholder, placeholder), filter.Value
+
+	case "IN":
+		// Expects Value to be a slice
+		return fmt.Sprintf("t.%s IN (%s)", filter.Field, placeholder), filter.Value
+
+	case "LIKE", "ILIKE":
+		return fmt.Sprintf("t.%s %s %s", filter.Field, filter.Operator, placeholder), filter.Value
+
+	default:
+		// Default to equality
+		return fmt.Sprintf("t.%s = %s", filter.Field, placeholder), filter.Value
+	}
+}
+
+// GetUserTotalIncome calculates total income for a user
+func GetUserTotalIncome(ctx context.Context, userID int, startDate, endDate *string) (float64, error) {
+	aggregation := TransactionAggregation{
+		Function: "COALESCE(SUM(ABS",
+		Field:    "t.amount))",
+		Alias:    "total_income",
+	}
+
+	filters := []TransactionFilter{
+		{
+			Field:    "amount",
+			Operator: "<",
+			Value:    0,
+		},
+	}
+
+	// add date range filters
+	if startDate != nil {
+		filters = append(filters, TransactionFilter{
+			Field:    "date",
+			Operator: ">=",
+			Value:    *startDate,
+		})
+	}
+
+	if endDate != nil {
+		filters = append(filters, TransactionFilter{
+			Field:    "date",
+			Operator: "<=",
+			Value:    *startDate,
+		})
+	}
+
+	return QueryTransactionsDynamic(ctx, userID, aggregation, filters)
 }

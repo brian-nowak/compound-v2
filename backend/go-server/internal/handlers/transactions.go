@@ -146,3 +146,37 @@ func GetUserTransactions(c *gin.Context) {
 		"transactions": transactions,
 	})
 }
+
+// GetUserIncome handles GET /api/transactions/income/:userID
+// Query params:
+//   - start_date: optional start date (YYYY-MM-DD)
+//   - end_date: optional end date (YYYY-MM-DD)
+func GetUserIncome(c *gin.Context) {
+	userIDStr := c.Param("userID")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
+		return
+	}
+
+	// parse optional date range from query params
+	var startDate, endDate *string
+	if sd := c.Query("start_date"); sd != "" {
+		startDate = &sd
+	}
+	if ed := c.Query("end_date"); ed != "" {
+		endDate = &ed
+	}
+
+	totalIncome, err := db.GetUserTotalIncome(context.Background(), userID, startDate, endDate)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to calculate income: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"total_income": totalIncome,
+	})
+}
