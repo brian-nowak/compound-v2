@@ -5,16 +5,11 @@ const GO_BACKEND_URL = process.env.GO_BACKEND_URL || 'http://localhost:8000';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log('Calling Go backend at:', `${GO_BACKEND_URL}/api/link-token`);
-    console.log('Request body:', body);
-
     const response = await fetch(`${GO_BACKEND_URL}/api/link-token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-
-    console.log('Go backend response status:', response.status);
 
     if (!response.ok) {
       const error = await response.json();
@@ -23,7 +18,6 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
-    console.log('Go backend response data:', data);
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error getting link token:', error);

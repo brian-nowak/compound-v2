@@ -20,7 +20,7 @@ async function getTotalIncomeFromDB(userId: number): Promise<number> {
              LIMIT 10`,
             [userId]
         );
-        console.log('Sample transactions:', debug.rows);
+        // console.log('Sample transactions:', debug.rows);
 
         const result = await pool.query(
       `SELECT COALESCE(SUM(ABS(t.amount)), 0) as total_income
@@ -32,7 +32,7 @@ async function getTotalIncomeFromDB(userId: number): Promise<number> {
          AND t.name ILIKE '%DATABRICKS%'`,
       [userId]
         );
-        console.log('Query result:', result.rows[0]);
+        // console.log('Query result:', result.rows[0]);
         return parseFloat(result.rows[0]?.total_income || '0');
     } catch (error) {
         console.error('Failed to fetch income from DB:', error);

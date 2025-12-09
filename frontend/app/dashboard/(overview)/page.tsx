@@ -9,40 +9,82 @@ import FinancialCards from '@/app/ui/dashboard/financial-cards';
 import SpendingChart from '@/app/ui/dashboard/spending-chart';
 import RecentTransactions from '@/app/ui/dashboard/recent-transactions';
 import TotalIncomeCardRSC from '@/app/ui/dashboard/total-income-card-rsc';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import TotalIncomeValue from '@/app/ui/dashboard/total-income-value';
+import FilterSidebar from '@/app/ui/dashboard/filter-sidebar';
 
-export default async function Page() {
+export default async function Page({
+  searchParams
+}: {
+  searchParams: Promise<{ dateRange?: string; category?: string }>
+}) {
   // TODO: Get userId from user context instead of hardcoding
   const userId = 1;
+
+  // Await searchParams in Next.js 15+
+  const params = await searchParams;
+
+  // Extract filters from URL
+  const filters = {
+    dateRange: params.dateRange || 'all',
+    category: params.category || 'all'
+  };
 
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Dashboard
       </h1>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <Suspense fallback={<CardsSkeleton />}>
-          <FinancialCards userId={userId} />
-        </Suspense>
-      </div>
-      {/* RSC comparison section */}
-      <h2 className="mt-8">RSC Approaches (Comparison)</h2>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <Suspense fallback={<div>Loading RSC...</div>}>
-          <TotalIncomeCardRSC userId={userId} />
-        </Suspense>
-        
-        {/* <Suspense fallback={<div>Loading Server Action...</div>}>
-          <TotalIncomeCardServerAction userId={userId} />
-        </Suspense> */}
-      </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-        <Suspense fallback={<RevenueChartSkeleton />}>
-          <SpendingChart userId={userId} />
-        </Suspense>
-        <Suspense fallback={<LatestInvoicesSkeleton />}>
-          <RecentTransactions userId={userId} />
-        </Suspense>
-        
+
+      <div className="grid grid-cols-12 gap-6">
+        {/* Sidebar - spans 3 columns */}
+        <div className="col-span-12 lg:col-span-3">
+          <FilterSidebar />
+        </div>
+
+        {/* Main content - spans 9 columns */}
+        <div className="col-span-12 lg:col-span-9 space-y-6">
+          {/* Cards */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <Suspense fallback={<CardsSkeleton />}>
+              <FinancialCards userId={userId} />
+            </Suspense>
+          </div>
+
+          {/* RSC comparison section */}
+          <div>
+            <h2 className="mb-4">React Server Components (RSCs) + shadcn/ui</h2>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <Card className="w-full max-w-sm">
+                <CardHeader>
+                  <CardTitle>Total Income</CardTitle>
+                  <CardDescription>
+                    Income from Databricks - {filters.dateRange === 'all' ? 'All Time' : filters.dateRange === '30d' ? 'Last 30 Days' : filters.dateRange === '90d' ? 'Last 90 Days' : 'Last Year'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Suspense fallback={<div className="text-2xl font-bold">Loading...</div>}>
+                    <TotalIncomeValue userId={userId} filters={filters} />
+                  </Suspense>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Spending Chart */}
+          <div>
+            <Suspense fallback={<RevenueChartSkeleton />}>
+              <SpendingChart userId={userId} filters={filters} />
+            </Suspense>
+          </div>
+
+          {/* Recent Transactions */}
+          <div>
+            <Suspense fallback={<LatestInvoicesSkeleton />}>
+              <RecentTransactions userId={userId} />
+            </Suspense>
+          </div>
+        </div>
       </div>
     </main>
   );
