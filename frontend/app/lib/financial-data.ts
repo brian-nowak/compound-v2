@@ -1,7 +1,8 @@
-import { getUserAccounts, getUserTransactions } from './plaid-api';
+import { getUserAccounts, getUserTransactions, getUserIncome } from './plaid-api';
 import { Account } from './plaid-definitions';
 
 export interface FinancialSummary {
+  totalIncome: number;
   totalBalance: number;
   cashBalance: number;
   creditBalance: number;
@@ -11,11 +12,15 @@ export interface FinancialSummary {
 export async function fetchFinancialSummary(
   userId: number
 ): Promise<FinancialSummary> {
-  const accounts = await getUserAccounts(userId);
+  const [accounts, totalIncome] = await Promise.all([
+    getUserAccounts(userId),
+    getUserIncome(userId),
+  ]);
 
   // Handle null or undefined accounts
   if (!accounts) {
     return {
+      totalIncome,
       totalBalance: 0,
       cashBalance: 0,
       creditBalance: 0,
@@ -50,6 +55,7 @@ export async function fetchFinancialSummary(
   const netWorth = totalAssets - creditBalance;
 
   return {
+    totalIncome,
     totalBalance: totalAssets,
     cashBalance,
     creditBalance,

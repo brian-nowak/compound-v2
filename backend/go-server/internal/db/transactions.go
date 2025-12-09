@@ -304,6 +304,11 @@ func GetUserTotalIncome(ctx context.Context, userID int, startDate, endDate *str
 			Operator: "<",
 			Value:    0,
 		},
+		{
+			Field:    "name",
+			Operator: "ILIKE",
+			Value:    "%DATABRICKS%",
+		},
 	}
 
 	// add date range filters

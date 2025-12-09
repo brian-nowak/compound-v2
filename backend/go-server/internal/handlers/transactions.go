@@ -147,12 +147,12 @@ func GetUserTransactions(c *gin.Context) {
 	})
 }
 
-// GetUserIncome handles GET /api/transactions/income/:userID
+// GetUserIncome handles GET /api/users/:id/income
 // Query params:
 //   - start_date: optional start date (YYYY-MM-DD)
 //   - end_date: optional end date (YYYY-MM-DD)
 func GetUserIncome(c *gin.Context) {
-	userIDStr := c.Param("userID")
+	userIDStr := c.Param("id")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})

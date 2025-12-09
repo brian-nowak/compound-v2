@@ -3,6 +3,7 @@ import {
   CreditCardIcon,
   ScaleIcon,
   WalletIcon,
+  ArrowTrendingUpIcon,
 } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
 import { fetchFinancialSummary } from '@/app/lib/financial-data';
@@ -13,6 +14,15 @@ const iconMap = {
   credit: CreditCardIcon,
   balance: WalletIcon,
   netWorth: ScaleIcon,
+  income: ArrowTrendingUpIcon,
+};
+
+const getValueColor = (type: string) => {
+  switch(type) {
+    case 'income': return 'text-green-600 dark:text-green-400';
+    case 'credit': return 'text-red-600 dark:text-red-400';
+    default: return 'text-gray-900 dark:text-gray-100';
+  }
 };
 
 export default async function FinancialCards({ userId }: { userId: number }) {
@@ -20,6 +30,7 @@ export default async function FinancialCards({ userId }: { userId: number }) {
 
   return (
     <>
+      <Card title="Total Income" value={summary.totalIncome} type="income" />      
       <Card title="Total Balance" value={summary.totalBalance} type="balance" />
       <Card title="Cash" value={summary.cashBalance} type="cash" />
       <Card
@@ -39,7 +50,7 @@ export function Card({
 }: {
   title: string;
   value: number | string;
-  type: 'cash' | 'credit' | 'balance' | 'netWorth';
+  type: 'cash' | 'credit' | 'balance' | 'netWorth' | 'income';
 }) {
   const Icon = iconMap[type];
 
@@ -50,7 +61,7 @@ export function Card({
         <h3 className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">{title}</h3>
       </div>
       <p
-        className={`${lusitana.className} truncate rounded-xl bg-white px-4 py-8 text-center text-2xl text-gray-900 dark:bg-gray-700 dark:text-gray-100`}
+        className={`${lusitana.className} truncate rounded-xl bg-white px-4 py-8 text-center text-2xl ${getValueColor(type)} dark:bg-gray-700`}
       >
         {typeof value === 'number' ? formatCurrency(value) : value}
       </p>

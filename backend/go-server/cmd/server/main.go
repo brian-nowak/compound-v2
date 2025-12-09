@@ -106,6 +106,13 @@ func main() {
 	// start API endpoints
 	// -------------------------------------------------
 
+	// health check endpoint
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "healthy",
+		})
+	})
+
 	// define a simple test endpoint - pointing to a func
 	router.GET("/api/ping", returnPong)
 
@@ -127,7 +134,7 @@ func main() {
 	// Transaction endpoints
 	router.POST("/api/items/:itemID/sync-transactions", handlers.SyncTransactionsForItem)
 	router.GET("/api/transactions/:userID", handlers.GetUserTransactions)
-	router.GET("/api/transactions/income/:userID")
+	router.GET("/api/users/:id/income", handlers.GetUserIncome)
 
 	// -------------------------------------------------
 	// end API endpoints
