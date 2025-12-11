@@ -1,6 +1,14 @@
 import { formatCurrency, formatDateToLocal } from '@/app/lib/utils';
 import { Transaction } from '@/app/lib/plaid-definitions';
 import TransactionRow from './transaction-row';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 export default function TransactionsTable({
   transactions,
@@ -9,98 +17,86 @@ export default function TransactionsTable({
 }) {
   return (
     <div className="mt-6 flow-root">
-      <div className="inline-block min-w-full align-middle">
-        {/* Mobile view - cards */}
-        <div className="rounded-lg bg-gray-50 p-2 md:hidden">
-          {transactions?.map((transaction) => (
-            <TransactionRow key={transaction.id} transaction={transaction} />
-          ))}
-        </div>
+      {/* Mobile view - cards */}
+      <div className="rounded-lg bg-muted p-2 md:hidden">
+        {transactions?.map((transaction) => (
+          <TransactionRow key={transaction.id} transaction={transaction} />
+        ))}
+      </div>
 
-        {/* Desktop view - table */}
-        <table className="hidden min-w-full text-gray-900 md:table">
-          <thead className="rounded-lg text-left text-sm font-normal">
-            <tr>
-              <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                Date
-              </th>
-              <th scope="col" className="px-3 py-5 font-medium">
-                Description
-              </th>
-              <th scope="col" className="px-3 py-5 font-medium">
-                Category
-              </th>
-              <th scope="col" className="px-3 py-5 font-medium">
-                Type
-              </th>
-              <th scope="col" className="px-3 py-5 font-medium text-right">
-                Amount
-              </th>
-              <th scope="col" className="px-3 py-5 font-medium">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white">
-            {transactions?.map((transaction, idx) => {
+      {/* Desktop view - table */}
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[120px]">Date</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {transactions?.map((transaction) => {
               const isIncome = transaction.amount < 0;
               const displayAmount = Math.abs(transaction.amount);
 
               return (
-                <tr
-                  key={transaction.id}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
-                >
-                  <td className="whitespace-nowrap px-3 py-3 pl-6">
+                <TableRow key={transaction.id}>
+                  <TableCell className="whitespace-nowrap">
                     {formatDateToLocal(transaction.date)}
-                  </td>
-                  <td className="px-3 py-3">
+                  </TableCell>
+                  <TableCell>
                     <div className="font-medium">{transaction.name}</div>
                     {transaction.account_owner && (
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-muted-foreground">
                         {transaction.account_owner}
                       </div>
                     )}
-                  </td>
-                  <td className="px-3 py-3">
-                    {transaction.category ? (
-                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
-                        {transaction.category}
+                  </TableCell>
+                  <TableCell>
+                    {(transaction.primary_category || transaction.category) ? (
+                      <span className="text-foreground">
+                        {transaction.primary_category || transaction.category}
                       </span>
                     ) : (
-                      <span className="text-gray-400">—</span>
+                      <span className="text-muted-foreground">—</span>
                     )}
-                  </td>
-                  <td className="px-3 py-3 capitalize">
-                    <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                  </TableCell>
+                  <TableCell>
+                    <span className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium capitalize">
                       {transaction.type}
                     </span>
-                  </td>
-                  <td className="px-3 py-3 text-right">
+                  </TableCell>
+                  <TableCell className="text-right">
                     <span
-                      className={`font-semibold ${isIncome ? 'text-green-600' : 'text-gray-900'
-                        }`}
+                      className={`font-semibold ${
+                        isIncome
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-foreground'
+                      }`}
                     >
                       {isIncome ? '+' : '-'}
                       {formatCurrency(displayAmount)}
                     </span>
-                  </td>
-                  <td className="px-3 py-3">
+                  </TableCell>
+                  <TableCell>
                     {transaction.pending ? (
-                      <span className="inline-flex items-center rounded-full bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800">
+                      <span className="inline-flex items-center rounded-full bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300">
                         Pending
                       </span>
                     ) : (
-                      <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700">
+                      <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 dark:bg-green-950 dark:text-green-300">
                         Posted
                       </span>
                     )}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

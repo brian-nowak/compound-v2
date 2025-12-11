@@ -52,6 +52,7 @@ export interface Transaction {
   plaid_transaction_id: string;
   plaid_category_id: string | null;
   category: string | null;
+  primary_category: string | null;
   type: string;
   name: string;
   amount: number;

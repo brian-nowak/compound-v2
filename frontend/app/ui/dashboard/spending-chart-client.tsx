@@ -2,8 +2,8 @@
 
 import { formatCurrency } from '@/app/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { ChartContainer } from '@/components/ui/chart';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, LabelList } from 'recharts';
 
 interface ChartData {
   category: string;
@@ -38,6 +38,7 @@ export default function SpendingChartClient({ data, dateRangeText }: SpendingCha
     return config;
   }, {} as Record<string, { label: string; color: string }>);
 
+
   return (
     <Card>
       <CardHeader>
@@ -65,11 +66,14 @@ export default function SpendingChartClient({ data, dateRangeText }: SpendingCha
                 axisLine={false}
                 tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
               />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
-              <Bar dataKey="amount" radius={8} />
+              <Bar dataKey="amount" radius={8}>
+                <LabelList
+                  dataKey="amount"
+                  position="top"
+                  formatter={(value: number) => formatCurrency(value)}
+                  className="fill-foreground text-xs"
+                />
+              </Bar>
             </BarChart>
           </ChartContainer>
         )}

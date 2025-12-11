@@ -123,13 +123,12 @@ func GetTransactionByID(ctx context.Context, transactionID int) (*models.Transac
 }
 
 // GetTransactionByUserID retrieves all transactions for a specific user
+// Uses transactions_enriched view to include primary_category from JSONB category_data
 func GetTransactionByUserID(ctx context.Context, userID int) ([]*models.Transaction, error) {
-	query := `SELECT t.id, t.account_id, t.plaid_transaction_id, t.plaid_category_id, t.category, t.type, t.name, t.amount, t.iso_currency_code, t.unofficial_currency_code, t.date, t.pending, t.account_owner, t.created_at, t.updated_at
-	          FROM transactions_table t
-	          LEFT JOIN accounts_table a ON t.account_id = a.id
-	          LEFT JOIN items_table i ON a.item_id = i.id
-	          WHERE i.user_id = $1
-	          ORDER BY t.date DESC`
+	query := `SELECT id, account_id, plaid_transaction_id, plaid_category_id, legacy_category, primary_category, type, transaction_name AS name, amount, iso_currency_code, unofficial_currency_code, date, pending, account_owner, created_at, updated_at
+	          FROM transactions_enriched
+	          WHERE user_id = $1
+	          ORDER BY date DESC`
 
 	rows, err := conn.Query(ctx, query, userID)
 	if err != nil {
@@ -140,14 +139,16 @@ func GetTransactionByUserID(ctx context.Context, userID int) ([]*models.Transact
 	var transactions []*models.Transaction
 	for rows.Next() {
 		transaction := &models.Transaction{}
+		var primaryCategory *string
 		err := rows.Scan(
 			&transaction.ID,
 			&transaction.AccountID,
 			&transaction.PlaidTransactionID,
 			&transaction.PlaidCategoryID,
-			&transaction.Category,
+			&transaction.Category, // legacy_category from view
+			&primaryCategory,       // primary_category from view
 			&transaction.Type,
-			&transaction.Name,
+			&transaction.Name, // transaction_name aliased as name
 			&transaction.Amount,
 			&transaction.IsoCurrencyCode,
 			&transaction.UnofficialCurrencyCode,
@@ -159,6 +160,14 @@ func GetTransactionByUserID(ctx context.Context, userID int) ([]*models.Transact
 		)
 		if err != nil {
 			return nil, fmt.Errorf("row scan failed: %w", err)
+		}
+		// Use primary_category if available, otherwise fall back to legacy category
+		if primaryCategory != nil && *primaryCategory != "" {
+			transaction.PrimaryCategory = primaryCategory
+			// Also set Category for backward compatibility
+			if transaction.Category == nil || *transaction.Category == "" {
+				transaction.Category = primaryCategory
+			}
 		}
 		transactions = append(transactions, transaction)
 	}

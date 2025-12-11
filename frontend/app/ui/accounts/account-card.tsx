@@ -35,21 +35,21 @@ export function AccountCard({ account }: AccountCardProps) {
   const colorClass = accountTypeColors[account.type] || accountTypeColors.other;
 
   const balance = account.current_balance ?? account.available_balance;
-  const displayBalance = balance !== null ? formatCurrency(balance * 100) : 'N/A';
+  const displayBalance = balance !== null ? formatCurrency(balance) : 'N/A';
 
   // Credit accounts show debt as positive, so we display it differently
   const isDebt = account.type === 'credit' || account.type === 'loan';
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div className={clsx('rounded-lg p-2', colorClass)}>
             <Icon className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="font-medium text-gray-900">{account.name}</h3>
-            <p className="text-sm text-gray-500">
+            <h3 className="font-medium text-card-foreground">{account.name}</h3>
+            <p className="text-sm text-muted-foreground">
               {account.subtype} {account.mask && `••••${account.mask}`}
             </p>
           </div>
@@ -66,7 +66,7 @@ export function AccountCard({ account }: AccountCardProps) {
 
       <div className="mt-4 flex items-baseline justify-between">
         <div>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {isDebt ? 'Balance Owed' : 'Current Balance'}
           </p>
           <p
@@ -74,7 +74,7 @@ export function AccountCard({ account }: AccountCardProps) {
               'text-xl font-semibold',
               isDebt && balance !== null && balance > 0
                 ? 'text-red-600'
-                : 'text-gray-900'
+                : 'text-card-foreground'
             )}
           >
             {displayBalance}
@@ -83,9 +83,9 @@ export function AccountCard({ account }: AccountCardProps) {
         {account.available_balance !== null &&
           account.available_balance !== account.current_balance && (
             <div className="text-right">
-              <p className="text-sm text-gray-500">Available</p>
-              <p className="text-lg font-medium text-gray-700">
-                {formatCurrency(account.available_balance * 100)}
+              <p className="text-sm text-muted-foreground">Available</p>
+              <p className="text-lg font-medium text-muted-foreground">
+                {formatCurrency(account.available_balance)}
               </p>
             </div>
           )}
@@ -96,20 +96,20 @@ export function AccountCard({ account }: AccountCardProps) {
 
 export function AccountCardSkeleton() {
   return (
-    <div className="animate-pulse rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <div className="animate-pulse rounded-lg border border-border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-gray-200" />
+          <div className="h-9 w-9 rounded-lg bg-muted" />
           <div>
-            <div className="h-5 w-32 rounded bg-gray-200" />
-            <div className="mt-1 h-4 w-24 rounded bg-gray-200" />
+            <div className="h-5 w-32 rounded bg-muted" />
+            <div className="mt-1 h-4 w-24 rounded bg-muted" />
           </div>
         </div>
-        <div className="h-6 w-16 rounded-full bg-gray-200" />
+        <div className="h-6 w-16 rounded-full bg-muted" />
       </div>
       <div className="mt-4">
-        <div className="h-4 w-24 rounded bg-gray-200" />
-        <div className="mt-1 h-7 w-28 rounded bg-gray-200" />
+        <div className="h-4 w-24 rounded bg-muted" />
+        <div className="mt-1 h-7 w-28 rounded bg-muted" />
       </div>
     </div>
   );

@@ -35,7 +35,7 @@ async function getSpendingData(userId: number, filters: Filters) {
       SUM(t.amount) as total
     FROM transactions_enriched t
     WHERE t.user_id = $1
-    AND t.primary_category not in ('TRANSFER_OUT', 'LOAN_PAYMENTS')  
+    AND t.primary_category not like '%Transfer%' and t.primary_category <> 'Loan Payments'
     ${dateFilter}
       ${categoryFilter}
     GROUP BY primary_category

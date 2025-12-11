@@ -8,6 +8,7 @@ type Transaction struct {
 	PlaidTransactionID     string    `db:"plaid_transaction_id" json:"plaid_transaction_id"`
 	PlaidCategoryID        *string   `db:"plaid_category_id" json:"plaid_category_id"`
 	Category               *string   `db:"category" json:"category"`
+	PrimaryCategory        *string   `db:"primary_category" json:"primary_category"`
 	Type                   string    `db:"type" json:"type"`
 	Name                   string    `db:"name" json:"name"`
 	Amount                 float64   `db:"amount" json:"amount"`

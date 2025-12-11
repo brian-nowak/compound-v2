@@ -27,7 +27,8 @@ CREATE VIEW transactions_enriched AS
     t.category AS legacy_category,
 
     -- Materialized primary category from JSONB using #>> for nested path
-    t.category_data#>>'{personal_finance_category,primary}' AS primary_category,
+    -- Prettify: convert to lowercase, replace underscores with spaces, then capitalize first letter of each word
+    INITCAP(REPLACE(LOWER(t.category_data#>>'{personal_finance_category,primary}'), '_', ' ')) AS primary_category,
     t.category_data#>>'{personal_finance_category,detailed}' AS detailed_category,
     t.category_data#>>'{personal_finance_category,confidence_level}' AS category_confidence,
 

@@ -31,15 +31,15 @@ export default function TransactionRow({
   };
 
   return (
-    <div className="mb-2 w-full rounded-md bg-white p-4">
-      <div className="flex items-center justify-between border-b pb-4">
+    <div className="mb-2 w-full rounded-md bg-card p-4 border border-border">
+      <div className="flex items-center justify-between border-b border-border pb-4">
         <div className="flex items-center gap-3">
-          <div className={`rounded-full p-2 ${isIncome ? 'bg-green-100' : 'bg-gray-100'}`}>
+          <div className={`rounded-full p-2 ${isIncome ? 'bg-green-100 dark:bg-green-950' : 'bg-muted'}`}>
             {getIcon()}
           </div>
           <div>
-            <p className="font-medium">{transaction.name}</p>
-            <p className="text-sm text-gray-500">
+            <p className="font-medium text-card-foreground">{transaction.name}</p>
+            <p className="text-sm text-muted-foreground">
               {formatDateToLocal(transaction.date)}
             </p>
           </div>
@@ -47,21 +47,23 @@ export default function TransactionRow({
         <div className="text-right">
           <p
             className={`text-lg font-semibold ${
-              isIncome ? 'text-green-600' : 'text-gray-900'
+              isIncome
+                ? 'text-green-600 dark:text-green-400'
+                : 'text-card-foreground'
             }`}
           >
             {isIncome ? '+' : '-'}
             {formatCurrency(displayAmount)}
           </p>
           {transaction.pending && (
-            <p className="text-xs text-yellow-600">Pending</p>
+            <p className="text-xs text-yellow-600 dark:text-yellow-400">Pending</p>
           )}
         </div>
       </div>
-      {transaction.category && (
+      {(transaction.primary_category || transaction.category) && (
         <div className="pt-2">
-          <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
-            {transaction.category}
+          <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+            {transaction.primary_category || transaction.category}
           </span>
         </div>
       )}

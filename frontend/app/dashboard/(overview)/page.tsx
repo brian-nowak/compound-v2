@@ -10,7 +10,13 @@ import SpendingChart from '@/app/ui/dashboard/spending-chart';
 import RecentTransactions from '@/app/ui/dashboard/recent-transactions';
 import TotalIncomeCardRSC from '@/app/ui/dashboard/total-income-card-rsc';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
-import TotalIncomeValue from '@/app/ui/dashboard/total-income-value';
+import {
+  TotalIncomeValue,
+  TotalBalanceValue,
+  CashBalanceValue,
+  CreditBalanceValue,
+  NetWorthValue,
+} from '@/app/ui/dashboard/financial-metric-values';
 import FilterSidebar from '@/app/ui/dashboard/filter-sidebar';
 
 export default async function Page({
@@ -55,7 +61,7 @@ export default async function Page({
           <div>
             <h2 className="mb-4">React Server Components (RSCs) + shadcn/ui</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <Card className="w-full max-w-sm">
+              <Card>
                 <CardHeader>
                   <CardTitle>Total Income</CardTitle>
                   <CardDescription>
@@ -65,6 +71,62 @@ export default async function Page({
                 <CardContent>
                   <Suspense fallback={<div className="text-2xl font-bold">Loading...</div>}>
                     <TotalIncomeValue userId={userId} filters={filters} />
+                  </Suspense>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Total Balance</CardTitle>
+                  <CardDescription>
+                    All depository, investment, and brokerage accounts
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Suspense fallback={<div className="text-2xl font-bold">Loading...</div>}>
+                    <TotalBalanceValue userId={userId} />
+                  </Suspense>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Cash</CardTitle>
+                  <CardDescription>
+                    Checking and savings accounts
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Suspense fallback={<div className="text-2xl font-bold">Loading...</div>}>
+                    <CashBalanceValue userId={userId} />
+                  </Suspense>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Credit Card Debt</CardTitle>
+                  <CardDescription>
+                    Total credit card and loan balances
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Suspense fallback={<div className="text-2xl font-bold">Loading...</div>}>
+                    <CreditBalanceValue userId={userId} />
+                  </Suspense>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Net Worth</CardTitle>
+                  <CardDescription>
+                    Total assets minus liabilities -------
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Suspense fallback={<div className="text-2xl font-bold">Loading...</div>}>
+                    <NetWorthValue userId={userId} />
                   </Suspense>
                 </CardContent>
               </Card>
