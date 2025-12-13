@@ -15,7 +15,7 @@ export default function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="flex items-center justify-center rounded-md bg-gray-50 p-3 dark:bg-gray-800">
+      <div className="flex items-center justify-center rounded-md bg-muted p-3">
         <div className="h-6 w-6" />
       </div>
     );
@@ -60,7 +60,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={cycleTheme}
-      className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 dark:bg-gray-800 dark:hover:bg-gray-700 md:flex-none md:justify-start md:p-2 md:px-3"
+      className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-muted p-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground md:flex-none md:justify-start md:p-2 md:px-3 transition-colors"
       aria-label="Toggle theme"
     >
       {getIcon()}

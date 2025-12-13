@@ -34,7 +34,7 @@ export default function CreateUserButton() {
     <button
       onClick={handleCreateUser}
       disabled={isCreating}
-      className="flex h-[48px] w-full items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium text-gray-700 hover:bg-green-50 hover:text-green-600 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-green-900 dark:hover:text-green-400 md:justify-start md:p-2 md:px-3"
+      className="flex h-[48px] w-full items-center justify-center gap-2 rounded-md bg-muted p-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50 md:justify-start md:p-2 md:px-3 transition-colors"
     >
       <UserPlusIcon className="w-6" />
       <span className="hidden md:block">

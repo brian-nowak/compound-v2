@@ -34,7 +34,7 @@ export function PlaidLinkWrapper({ userId, itemId }: PlaidLinkWrapperProps) {
 
   if (isLoading) {
     return (
-      <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-200" />
+      <div className="h-10 w-32 animate-pulse rounded-lg bg-muted" />
     );
   }
 
@@ -42,7 +42,7 @@ export function PlaidLinkWrapper({ userId, itemId }: PlaidLinkWrapperProps) {
     return (
       <button
         disabled
-        className="flex items-center gap-2 rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-500 cursor-not-allowed"
+        className="flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm font-medium text-muted-foreground cursor-not-allowed"
         title={error || 'Unable to connect to Plaid'}
       >
         Link Account

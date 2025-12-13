@@ -30,7 +30,7 @@ export default function AccountsPage() {
 
 function PlaidLinkButtonSkeleton() {
   return (
-    <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-200" />
+    <div className="h-10 w-32 animate-pulse rounded-lg bg-muted" />
   );
 }
 

@@ -51,11 +51,11 @@ export default async function Page({
         {/* Main content - spans 9 columns */}
         <div className="col-span-12 lg:col-span-9 space-y-6">
           {/* Cards */}
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/* <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <Suspense fallback={<CardsSkeleton />}>
               <FinancialCards userId={userId} />
             </Suspense>
-          </div>
+          </div> */}
 
           {/* RSC comparison section */}
           <div>

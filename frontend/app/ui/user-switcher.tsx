@@ -72,7 +72,7 @@ export default function UserSwitcher() {
     <div className="relative">
       <button
         onClick={handleButtonClick}
-        className="flex w-full items-center gap-2 rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+        className="flex w-full items-center gap-2 rounded-md bg-muted px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
       >
         <UserCircleIcon className="h-5 w-5" />
         <span className="flex-1 text-left truncate">
@@ -90,10 +90,10 @@ export default function UserSwitcher() {
               setIsOpen(false);
             }}
           />
-          <div className="absolute bottom-full left-0 right-0 z-20 mb-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-gray-800 dark:ring-gray-700">
+          <div className="absolute bottom-full left-0 right-0 z-20 mb-2 rounded-md bg-card shadow-lg ring-1 ring-border border border-border">
             <div className="py-1">
               {isLoading ? (
-                <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+                <div className="px-4 py-2 text-sm text-muted-foreground">
                   Loading users...
                 </div>
               ) : (
@@ -102,10 +102,10 @@ export default function UserSwitcher() {
                     <button
                       key={user.id}
                       onClick={() => handleSwitchUser(user)}
-                      className={`block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      className={`block w-full px-4 py-2 text-left text-sm transition-colors ${
                         currentUser?.id === user.id
-                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-                          : 'text-gray-700 dark:text-gray-300'
+                          ? 'bg-accent text-accent-foreground'
+                          : 'text-card-foreground hover:bg-muted'
                       }`}
                     >
                       {user.username}
@@ -114,10 +114,10 @@ export default function UserSwitcher() {
                       )}
                     </button>
                   ))}
-                  <div className="border-t border-gray-100 dark:border-gray-700" />
+                  <div className="border-t border-border" />
                   <button
                     onClick={handleCreateUser}
-                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-card-foreground hover:bg-muted transition-colors"
                   >
                     <PlusIcon className="h-4 w-4" />
                     Create New User

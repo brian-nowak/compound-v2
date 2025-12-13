@@ -33,28 +33,28 @@ export function AccountsList({ userId }: AccountsListProps) {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-gray-50 p-12 text-center">
-        <p className="text-gray-600">Loading accounts...</p>
+      <div className="rounded-xl border border-border bg-card p-12 text-center">
+        <p className="text-muted-foreground">Loading accounts...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-xl border border-orange-200 bg-orange-50 p-6 text-center">
-        <p className="text-orange-800">
+      <div className="rounded-xl border border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20 p-6 text-center">
+        <p className="text-orange-800 dark:text-orange-300">
           Unable to load accounts. Make sure the Go backend is running.
         </p>
-        <p className="mt-2 text-sm text-orange-600">{error}</p>
+        <p className="mt-2 text-sm text-orange-600 dark:text-orange-400">{error}</p>
       </div>
     );
   }
 
   if (accounts.length === 0) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-gray-50 p-12 text-center">
-        <p className="text-gray-600">No linked accounts yet.</p>
-        <p className="mt-2 text-sm text-gray-500">
+      <div className="rounded-xl border border-border bg-card p-12 text-center">
+        <p className="text-muted-foreground">No linked accounts yet.</p>
+        <p className="mt-2 text-sm text-muted-foreground">
           Click &quot;Link Account&quot; above to connect your bank.
         </p>
       </div>

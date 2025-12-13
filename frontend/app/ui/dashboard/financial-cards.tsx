@@ -21,7 +21,7 @@ const getValueColor = (type: string) => {
   switch(type) {
     case 'income': return 'text-green-600 dark:text-green-400';
     case 'credit': return 'text-red-600 dark:text-red-400';
-    default: return 'text-gray-900 dark:text-gray-100';
+    default: return 'text-card-foreground';
   }
 };
 
@@ -55,13 +55,13 @@ export function Card({
   const Icon = iconMap[type];
 
   return (
-    <div className="rounded-xl bg-gray-50 p-2 shadow-sm dark:bg-gray-800">
+    <div className="rounded-xl bg-card p-2 shadow-sm border border-border">
       <div className="flex p-4">
-        {Icon ? <Icon className="h-5 w-5 text-gray-700 dark:text-gray-300" /> : null}
-        <h3 className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">{title}</h3>
+        {Icon ? <Icon className="h-5 w-5 text-muted-foreground" /> : null}
+        <h3 className="ml-2 text-sm font-medium text-card-foreground">{title}</h3>
       </div>
       <p
-        className={`${lusitana.className} truncate rounded-xl bg-white px-4 py-8 text-center text-2xl ${getValueColor(type)} dark:bg-gray-700`}
+        className={`${lusitana.className} truncate rounded-xl bg-muted px-4 py-8 text-center text-2xl ${getValueColor(type)}`}
       >
         {typeof value === 'number' ? formatCurrency(value) : value}
       </p>
